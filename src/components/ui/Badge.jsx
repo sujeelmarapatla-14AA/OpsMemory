@@ -14,29 +14,29 @@ export default function Badge({
   };
 
   const variantStyles = {
-    default: 'bg-[#1B1D21] text-[#9CA3AF] border-[#272A2F]',
-    green: 'bg-[#84E071]/12 text-[#84E071] border-[#84E071]/30',
-    hindsight: 'bg-[#84E071]/12 text-[#84E071] border-[#84E071]/30 font-semibold',
-    critical: 'bg-rose-500/12 text-rose-400 border-rose-500/30 font-semibold',
-    high: 'bg-amber-500/12 text-amber-400 border-amber-500/30',
-    medium: 'bg-yellow-500/12 text-yellow-300 border-yellow-500/30',
-    low: 'bg-[#1B1D21] text-[#8E95A0] border-[#272A2F]',
-    investigating: 'bg-amber-500/12 text-amber-400 border-amber-500/30',
-    resolved: 'bg-[#84E071]/12 text-[#84E071] border-[#84E071]/30',
-    open: 'bg-sky-500/12 text-sky-400 border-sky-500/30',
+    default: 'bg-white/[0.04] text-zinc-300 border-white/10',
+    green: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    hindsight: 'bg-white/[0.08] text-white border-white/20 font-semibold',
+    critical: 'bg-rose-500/10 text-rose-400 border-rose-500/20 font-semibold',
+    high: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    medium: 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20',
+    low: 'bg-white/[0.03] text-zinc-400 border-white/[0.08]',
+    investigating: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+    resolved: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+    open: 'bg-white/[0.06] text-zinc-200 border-white/15',
   };
 
   const dotColors = {
-    default: 'bg-[#8E95A0]',
-    green: 'bg-[#84E071]',
-    hindsight: 'bg-[#84E071]',
+    default: 'bg-zinc-400',
+    green: 'bg-emerald-400',
+    hindsight: 'bg-white',
     critical: 'bg-rose-500 animate-pulse',
     high: 'bg-amber-400',
     medium: 'bg-yellow-400',
-    low: 'bg-[#8E95A0]',
+    low: 'bg-zinc-500',
     investigating: 'bg-amber-400 animate-pulse',
-    resolved: 'bg-[#84E071]',
-    open: 'bg-sky-400',
+    resolved: 'bg-emerald-400',
+    open: 'bg-zinc-300',
   };
 
   return (

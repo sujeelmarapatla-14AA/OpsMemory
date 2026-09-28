@@ -3,32 +3,63 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --bg-base: #0B0C0E;
-    --bg-sidebar: #090A0C;
-    --bg-workspace: #111214;
-    --bg-card: #17191C;
-    --bg-panel: #1B1D21;
-    --border-subtle: #272A2F;
-    --accent-green: #84E071;
-    --accent-green-hover: #73D460;
+    --background: #050505;
+    --background-secondary: #08080a;
+    --surface: #0d0d11;
+    --surface-elevated: #131318;
+    --surface-hover: #191920;
+    --border: rgba(255, 255, 255, 0.1);
+    --border-subtle: rgba(255, 255, 255, 0.05);
+    --border-focus: rgba(255, 255, 255, 0.35);
+    --text-primary: #ededed;
+    --text-secondary: #949aa3;
+    --text-muted: #5a606b;
+    --accent: #ffffff;
+    --accent-soft: rgba(255, 255, 255, 0.08);
+    --accent-glow: rgba(255, 255, 255, 0.15);
+    
+    /* Semantic colors ONLY - never dominant */
+    --semantic-success: #10b981;
+    --semantic-warning: #f59e0b;
+    --semantic-danger: #ef4444;
+    --semantic-info: #94a3b8;
   }
-  
+
   html, body {
     margin: 0;
     padding: 0;
-    background-color: #0B0C0E;
-    color: #EDEDED;
-    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     min-height: 100vh;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   code, pre, kbd, samp {
     font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
+
+  /* Keyboard shortcut badge */
+  kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text-secondary);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
 }
 
-/* Custom scrollbars for technical log viewers and sidebars */
+/* Custom scrollbars matching Hero */
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
@@ -39,26 +70,103 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #272A2F;
-  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3B3F47;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* Pulse animation for memory and status */
-@keyframes pulse-subtle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.96); }
+/* Hero-consistent focus state */
+:focus-visible {
+  outline: 1px solid rgba(255, 255, 255, 0.4);
+  outline-offset: 1px;
 }
 
-.animate-pulse-subtle {
-  animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Selection */
+/* Text selections */
 ::selection {
-  background: rgba(132, 224, 113, 0.25);
-  color: #84E071;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+/* Hero background atmospheric texture */
+.hero-vignette {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255, 255, 255, 0.04), rgba(0, 0, 0, 0.98));
+}
+
+.hero-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Hero card surface */
+.hero-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.hero-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Hero primary button */
+.hero-btn-primary {
+  background-color: var(--accent);
+  color: #000000;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.625rem 1.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.hero-btn-primary:hover {
+  background-color: #e4e4e7;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.hero-btn-primary:active {
+  transform: scale(0.98);
+}
+
+/* Hero secondary button */
+.hero-btn-secondary {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.hero-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.hero-btn-secondary:active {
+  transform: scale(0.98);
+}
+
+/* Subtle transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

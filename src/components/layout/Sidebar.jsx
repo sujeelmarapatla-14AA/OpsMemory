@@ -63,29 +63,29 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* TOP Header */}
           <div className="p-4 pb-3 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#17191C] border border-[#272A2F] flex items-center justify-center text-[#84E071]">
-                <Radio className="w-4 h-4 text-[#84E071]" />
+              <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-white">
+                <Radio className="w-4 h-4 text-white" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-sm font-semibold tracking-tight text-[#EDEDED] font-sans">
+                  <span className="text-sm font-semibold tracking-tight text-white font-sans">
                     OPSMEMORY
                   </span>
                 </div>
-                <p className="text-[11px] text-[#8E95A0] leading-none">Incident Intelligence</p>
+                <p className="text-[11px] text-zinc-400 leading-none">Incident Intelligence</p>
               </div>
             </div>
 
             <button
               onClick={onClose}
-              className="md:hidden text-[#8E95A0] hover:text-[#EDEDED] p-1"
+              className="md:hidden text-zinc-400 hover:text-white p-1"
               aria-label="Close sidebar"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
-          {/* + New Incident Button (Strongest Element, Green Accent Pill) */}
+          {/* + New Incident Button (Hero Primary White Button) */}
           <div className="px-3 py-2">
             <Button
               variant="primary"
@@ -95,7 +95,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 navigate('/incidents/new');
                 onClose?.();
               }}
-              className="w-full justify-center shadow-md shadow-[#84E071]/10 text-xs tracking-tight"
+              className="w-full justify-center text-xs tracking-tight"
             >
               New Incident
             </Button>
@@ -112,8 +112,8 @@ export default function Sidebar({ isOpen, onClose }) {
                 className={({ isActive }) =>
                   `flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all ${
                     isActive
-                      ? 'bg-[#17191C] text-[#EDEDED] font-semibold'
-                      : 'text-[#8E95A0] hover:text-[#EDEDED] hover:bg-[#111214]'
+                      ? 'bg-white/[0.08] text-white font-semibold border border-white/10'
+                      : 'text-zinc-400 hover:text-white hover:bg-white/[0.03]'
                   }`
                 }
               >
@@ -122,7 +122,7 @@ export default function Sidebar({ isOpen, onClose }) {
                     <div className="flex items-center gap-3">
                       <item.icon
                         className={`w-4 h-4 ${
-                          isActive ? 'text-[#84E071]' : 'text-[#8E95A0]'
+                          isActive ? 'text-white' : 'text-zinc-400'
                         }`}
                       />
                       <span>{item.name}</span>
@@ -131,7 +131,7 @@ export default function Sidebar({ isOpen, onClose }) {
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
                         item.count.includes('Active')
                           ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-                          : 'bg-[#1B1D21] text-[#8E95A0]'
+                          : 'bg-white/[0.04] text-zinc-400'
                       }`}>
                         {item.count}
                       </span>
@@ -142,9 +142,9 @@ export default function Sidebar({ isOpen, onClose }) {
             ))}
           </div>
 
-          {/* Workspace Recent Incidents (Chat/History-style list with active green bar indicator) */}
+          {/* Workspace Recent Incidents */}
           <div className="px-3 pt-3 flex-1 flex flex-col min-h-0 overflow-hidden">
-            <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-wider text-[#5A606B]">
+            <div className="px-3 pb-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500">
               Recent Incidents
             </div>
             <div className="space-y-0.5 overflow-y-auto flex-1 pr-1">
@@ -157,17 +157,17 @@ export default function Sidebar({ isOpen, onClose }) {
                     onClick={() => onClose?.()}
                     className={`group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors ${
                       isActive
-                        ? 'bg-[#17191C] text-[#EDEDED] font-medium'
-                        : 'text-[#8E95A0] hover:text-[#EDEDED] hover:bg-[#111214]'
+                        ? 'bg-white/[0.06] text-white font-medium'
+                        : 'text-zinc-400 hover:text-white hover:bg-white/[0.02]'
                     }`}
                   >
-                    {/* Reference active indicator bar on the left */}
+                    {/* Active indicator bar */}
                     {isActive && (
-                      <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-[#84E071] rounded-r-full" />
+                      <span className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-white rounded-r-full" />
                     )}
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-[#8E95A0]/60 group-hover:bg-[#84E071]" />
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-zinc-600 group-hover:bg-white" />
                     <div className="truncate flex-1">
-                      <span className="font-mono text-[11px] text-[#5A606B] mr-1.5">
+                      <span className="font-mono text-[11px] text-zinc-500 mr-1.5">
                         {incident.id}
                       </span>
                       <span className="truncate">{incident.title}</span>
@@ -180,23 +180,23 @@ export default function Sidebar({ isOpen, onClose }) {
         </div>
 
         {/* BOTTOM: Hindsight Status, Settings, Avatar */}
-        <div className="p-3 border-t border-[#272A2F]/80 bg-[#090A0C] space-y-2">
+        <div className="p-3 border-t border-white/[0.08] bg-[#090A0C] space-y-2">
           {/* Hindsight Status */}
-          <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#111214] border border-[#272A2F] text-[11px] font-mono">
+          <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/10 text-[11px] font-mono">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#84E071] opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#84E071]"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
               </span>
-              <span className="text-[#EDEDED]">Hindsight Connected</span>
+              <span className="text-zinc-200">Hindsight Connected</span>
             </div>
-            <Database className="w-3.5 h-3.5 text-[#84E071]" />
+            <Database className="w-3.5 h-3.5 text-zinc-400" />
           </div>
 
           {/* User profile & Settings */}
           <div className="flex items-center justify-between pt-1 px-1">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-full bg-[#1B1D21] border border-[#272A2F] flex items-center justify-center text-xs font-mono font-bold text-[#84E071]">
+              <div className="w-7 h-7 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center text-xs font-mono font-bold text-white">
                 S
               </div>
               <div className="text-left">

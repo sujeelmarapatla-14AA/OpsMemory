@@ -79,10 +79,10 @@ export default function Incidents() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#EDEDED] font-sans">
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-sans">
             Incidents
           </h1>
-          <p className="text-xs text-[#8E95A0] mt-1">
+          <p className="text-xs text-zinc-400 mt-1">
             Every production failure becomes operational knowledge.
           </p>
         </div>
@@ -103,29 +103,29 @@ export default function Incidents() {
             size="pill"
             icon={Plus}
             onClick={() => navigate('/incidents/new')}
-            className="text-xs shadow-md shadow-[#84E071]/10"
+            className="text-xs"
           >
             New Incident
           </Button>
         </div>
       </div>
 
-      {/* Filter and Search Bar: #17191C, rounded-2xl */}
-      <div className="p-4 rounded-2xl bg-[#17191C] border border-[#272A2F] space-y-3.5">
+      {/* Filter and Search Bar: #0d0d11, rounded-2xl */}
+      <div className="p-4 rounded-2xl bg-[#0d0d11] border border-white/[0.08] space-y-3.5">
         {/* Search input with dark styling */}
         <div className="relative">
-          <Search className="w-4 h-4 text-[#8E95A0] absolute left-3.5 top-2.5" />
+          <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-2.5" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by incident ID, title, service, or symptoms..."
-            className="w-full bg-[#111214] border border-[#272A2F] rounded-xl pl-9.5 pr-9 py-2 text-xs text-[#EDEDED] placeholder-[#5A606B] focus:outline-none focus:border-[#84E071]/50 font-sans transition-colors"
+            className="w-full bg-white/[0.03] border border-white/10 rounded-xl pl-9.5 pr-9 py-2 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 font-sans transition-colors"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-2.5 text-[#8E95A0] hover:text-[#EDEDED]"
+              className="absolute right-3 top-2.5 text-zinc-500 hover:text-white"
               aria-label="Clear search"
             >
               <X className="w-4 h-4" />
@@ -137,7 +137,7 @@ export default function Incidents() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-1">
           {/* Severity Filter */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#8E95A0]">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
               Severity:
             </span>
             <div className="flex flex-wrap gap-1">
@@ -145,10 +145,10 @@ export default function Incidents() {
                 <button
                   key={sev}
                   onClick={() => setSeverityFilter(sev)}
-                  className={`text-xs px-2.5 py-1 rounded-full transition-all ${
+                  className={`text-xs px-2.5 py-1 rounded-full transition-all cursor-pointer ${
                     severityFilter === sev
-                      ? 'bg-[#84E071] text-[#090A0C] font-semibold shadow-xs'
-                      : 'bg-[#111214] text-[#8E95A0] border border-[#272A2F] hover:text-[#EDEDED] hover:border-[#383C44]'
+                      ? 'bg-white text-black font-semibold shadow-xs'
+                      : 'bg-white/[0.03] text-zinc-400 border border-white/10 hover:text-white hover:border-white/20'
                   }`}
                 >
                   {sev}
@@ -159,7 +159,7 @@ export default function Incidents() {
 
           {/* Status Filter */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-[#8E95A0]">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
               Status:
             </span>
             <div className="flex flex-wrap gap-1">
@@ -167,10 +167,10 @@ export default function Incidents() {
                 <button
                   key={st}
                   onClick={() => setStatusFilter(st)}
-                  className={`text-xs px-2.5 py-1 rounded-full transition-all ${
+                  className={`text-xs px-2.5 py-1 rounded-full transition-all cursor-pointer ${
                     statusFilter === st
-                      ? 'bg-[#EDEDED] text-[#090A0C] font-semibold shadow-xs'
-                      : 'bg-[#111214] text-[#8E95A0] border border-[#272A2F] hover:text-[#EDEDED] hover:border-[#383C44]'
+                      ? 'bg-white text-black font-semibold shadow-xs'
+                      : 'bg-white/[0.03] text-zinc-400 border border-white/10 hover:text-white hover:border-white/20'
                   }`}
                 >
                   {st}
@@ -183,9 +183,9 @@ export default function Incidents() {
 
       {/* Incident List Rows */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs text-[#8E95A0] px-1">
+        <div className="flex items-center justify-between text-xs text-zinc-400 px-1">
           <span>
-            Showing <strong className="text-[#EDEDED]">{filteredIncidents.length}</strong> of {incidents.length} incidents
+            Showing <strong className="text-white">{filteredIncidents.length}</strong> of {incidents.length} incidents
           </span>
           {(searchQuery || severityFilter !== 'All' || statusFilter !== 'All') && (
             <button
@@ -194,7 +194,7 @@ export default function Incidents() {
                 setSeverityFilter('All');
                 setStatusFilter('All');
               }}
-              className="text-[#84E071] hover:underline"
+              className="text-white hover:underline cursor-pointer"
             >
               Reset Filters
             </button>

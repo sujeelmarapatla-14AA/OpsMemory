@@ -13,10 +13,10 @@ import { Info } from 'lucide-react';
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-[#17191C] border border-[#272A2F] p-2.5 rounded-xl shadow-lg text-xs font-mono">
-        <p className="text-[#8E95A0] font-semibold mb-1">{label}</p>
-        <div className="flex items-center gap-2 text-[#84E071]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#84E071]"></span>
+      <div className="bg-[#0d0d11] border border-white/15 p-2.5 rounded-xl shadow-lg text-xs font-mono">
+        <p className="text-zinc-400 font-semibold mb-1">{label}</p>
+        <div className="flex items-center gap-2 text-white">
+          <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
           <span>{payload[0].value} memory entries</span>
         </div>
       </div>
@@ -37,17 +37,17 @@ export default function MemoryGrowthChart({ data, isLive = false }) {
   ];
 
   return (
-    <div className="bg-[#17191C] border border-[#272A2F] rounded-2xl p-5 flex flex-col">
-      <div className="flex items-start justify-between pb-3 border-b border-[#272A2F]/80 mb-3">
+    <div className="bg-[#0d0d11] border border-white/[0.08] rounded-2xl p-5 flex flex-col">
+      <div className="flex items-start justify-between pb-3 border-b border-white/[0.06] mb-3">
         <div>
-          <h3 className="text-xs font-semibold text-[#EDEDED] uppercase tracking-wider font-mono">
+          <h3 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">
             Memory Growth
           </h3>
-          <p className="text-xs text-[#8E95A0] mt-0.5">
+          <p className="text-xs text-zinc-400 mt-0.5">
             Hindsight memory entries accumulated across production incidents
           </p>
         </div>
-        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#84E071]/12 text-[#84E071] border border-[#84E071]/30">
+        <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-white/[0.06] text-white border border-white/15">
           {isLive ? 'Live Bank' : 'Hindsight Active'}
         </span>
       </div>
@@ -59,26 +59,26 @@ export default function MemoryGrowthChart({ data, isLive = false }) {
             margin={{ top: 10, right: 10, left: -25, bottom: 0 }}
           >
             <defs>
-              <linearGradient id="memoryGreenFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#84E071" stopOpacity={0.25} />
-                <stop offset="95%" stopColor="#84E071" stopOpacity={0.0} />
+              <linearGradient id="memoryWhiteFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="#FFFFFF" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="#FFFFFF" stopOpacity={0.0} />
               </linearGradient>
             </defs>
-            <CartesianGrid strokeDasharray="2 2" stroke="#272A2F" vertical={false} />
+            <CartesianGrid strokeDasharray="2 2" stroke="rgba(255,255,255,0.05)" vertical={false} />
             <XAxis
               dataKey="date"
-              stroke="#5A606B"
+              stroke="#71717a"
               fontSize={11}
               fontFamily="monospace"
               tickLine={false}
-              axisLine={{ stroke: '#272A2F' }}
+              axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
             />
             <YAxis
-              stroke="#5A606B"
+              stroke="#71717a"
               fontSize={11}
               fontFamily="monospace"
               tickLine={false}
-              axisLine={{ stroke: '#272A2F' }}
+              axisLine={{ stroke: 'rgba(255,255,255,0.08)' }}
               domain={[0, 'dataMax + 10']}
             />
             <Tooltip content={<CustomTooltip />} />
@@ -86,22 +86,22 @@ export default function MemoryGrowthChart({ data, isLive = false }) {
               type="monotone"
               dataKey="count"
               name="Hindsight memory entries"
-              stroke="#84E071"
+              stroke="#FFFFFF"
               strokeWidth={2}
               fillOpacity={1}
-              fill="url(#memoryGreenFill)"
-              activeDot={{ r: 4, fill: '#84E071', stroke: '#111214', strokeWidth: 2 }}
+              fill="url(#memoryWhiteFill)"
+              activeDot={{ r: 4, fill: '#FFFFFF', stroke: '#0d0d11', strokeWidth: 2 }}
             />
           </AreaChart>
         </ResponsiveContainer>
       </div>
 
-      <div className="mt-3 pt-3 border-t border-[#272A2F]/60 flex items-center justify-between text-[11px] text-[#8E95A0] font-mono">
+      <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between text-[11px] text-zinc-400 font-mono">
         <div className="flex items-center gap-1.5">
-          <Info className="w-3.5 h-3.5 text-[#5A606B]" />
+          <Info className="w-3.5 h-3.5 text-zinc-500" />
           <span>Hindsight memory entries</span>
         </div>
-        <span className="text-[#EDEDED] font-semibold">Total: 84 entries</span>
+        <span className="text-white font-semibold">Total: 84 entries</span>
       </div>
     </div>
   );

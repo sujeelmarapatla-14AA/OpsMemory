@@ -12,14 +12,14 @@ export default function ErrorState({
 
   if (isMemoryError) {
     return (
-      <div className="p-5 rounded-2xl border border-amber-500/30 bg-[#17191C] text-amber-300">
+      <div className="p-5 rounded-2xl border border-amber-500/20 bg-[#0d0d11] text-amber-300">
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
           <div className="flex-1">
             <h4 className="text-xs font-semibold uppercase tracking-wider text-amber-400 font-mono">
               Memory temporarily unavailable
             </h4>
-            <p className="text-xs text-[#8E95A0] mt-1 leading-relaxed">
+            <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
               Fresh analysis can continue, but historical context cannot be retrieved.
             </p>
             {onRetry && (
@@ -36,14 +36,14 @@ export default function ErrorState({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-12 text-center border border-rose-500/30 rounded-2xl bg-[#17191C]">
-      <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/25 flex items-center justify-center text-rose-400 mb-4">
+    <div className="flex flex-col items-center justify-center p-12 text-center border border-rose-500/20 rounded-2xl bg-[#0d0d11]">
+      <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mb-4">
         <WifiOff className="w-6 h-6" />
       </div>
-      <h3 className="text-base font-semibold text-[#EDEDED]">
+      <h3 className="text-base font-semibold text-white">
         Backend unavailable
       </h3>
-      <p className="text-xs text-[#8E95A0] max-w-md mt-1 mb-6">
+      <p className="text-xs text-zinc-400 max-w-md mt-1 mb-6">
         {message || 'Unable to connect to the OpsMemory service.'}
       </p>
       <div className="flex items-center gap-3">

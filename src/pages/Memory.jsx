@@ -67,22 +67,22 @@ export default function Memory() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-1">
         <div>
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#84E071]/12 border border-[#84E071]/30 flex items-center justify-center text-[#84E071]">
-              <Brain className="w-4 h-4 text-[#84E071]" />
+            <div className="w-8 h-8 rounded-xl bg-white/[0.04] border border-white/15 flex items-center justify-center text-white">
+              <Brain className="w-4 h-4 text-white" />
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[#EDEDED] font-sans">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-white font-sans">
               🧠 Hindsight Memory
             </h1>
           </div>
-          <p className="text-xs text-[#8E95A0] mt-1">
+          <p className="text-xs text-zinc-400 mt-1">
             Everything OpsMemory has learned from previous incidents.
           </p>
         </div>
 
         <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#17191C] border border-[#272A2F] text-xs font-mono">
-            <span className="w-2 h-2 rounded-full bg-[#84E071] animate-pulse"></span>
-            <span className="text-[#EDEDED]">Bank: ops-incidents</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-xs font-mono">
+            <span className="w-2 h-2 rounded-full bg-white animate-pulse"></span>
+            <span className="text-zinc-200">Bank: ops-incidents</span>
           </div>
 
           <Button

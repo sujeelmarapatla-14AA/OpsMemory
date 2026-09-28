@@ -1,189 +1,286 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import {
-  Check,
+  CheckCircle2,
   Brain,
-  AlertCircle
+  Sparkles,
+  ShieldCheck,
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
-import Button from '../ui/Button';
 import { resolveIncident } from '../../services/api';
+import { useToast } from '../../context/ToastContext';
 
-export default function ResolutionForm({ incidentId, onResolved, isAlreadyResolved = false }) {
-  const navigate = useNavigate();
-  const [selectedOutcome, setSelectedOutcome] = useState('Fix Worked');
-  const [showFields, setShowFields] = useState(true);
-  const [rootCause, setRootCause] = useState('HikariCP database connection pool starvation under high concurrent webhook traffic.');
-  const [resolution, setResolution] = useState('Scaled database max-pool-size from 100 to 150 in helm config and restarted Payment API pods.');
-  const [loading, setLoading] = useState(false);
+export default function ResolutionForm({
+  incident,
+  incidentId,
+  suggestedRootCause,
+  suggestedResolution,
+  onResolved,
+  isAlreadyResolved = false
+}) {
+  const { addToast } = useToast();
+
+  const title = incident?.title || '';
+  const service = incident?.service || '';
+
+  const [rootCause, setRootCause] = useState(suggestedRootCause || '');
+  const [resolution, setResolution] = useState(suggestedResolution || '');
+  const [outcome, setOutcome] = useState('Fix Worked');
+  const [timeToResolution, setTimeToResolution] = useState('15 minutes');
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  const [successData, setSuccessData] = useState(isAlreadyResolved ? { already: true } : null);
+  const [confirmedData, setConfirmedData] = useState(isAlreadyResolved ? { isAlready: true } : null);
+
+  useEffect(() => {
+    if (suggestedRootCause && !rootCause) {
+      setRootCause(suggestedRootCause);
+    }
+    if (suggestedResolution && !resolution) {
+      setResolution(suggestedResolution);
+    }
+  }, [suggestedRootCause, suggestedResolution]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!rootCause.trim() || !resolution.trim()) {
-      setError('Please provide both the actual root cause and resolution applied.');
+      setError('Please provide both the actual root cause and the resolution applied.');
+      addToast({
+        title: 'Missing Resolution Details',
+        message: 'Root cause and resolution are required to retain operational knowledge.',
+        type: 'warning'
+      });
       return;
     }
 
-    setLoading(true);
+    setSubmitting(true);
     setError(null);
 
+    const payload = {
+      incident_title: title,
+      service: service,
+      root_cause: rootCause.trim(),
+      resolution: resolution.trim(),
+      outcome: outcome,
+      time_to_resolution: timeToResolution.trim() || '14 minutes',
+      id: incidentId || incident?.id || 'INC-084'
+    };
+
     try {
-      const result = await resolveIncident(incidentId, {
-        root_cause: rootCause,
-        resolution: resolution,
-        outcome: selectedOutcome
+      const result = await resolveIncident(payload);
+      setConfirmedData(result);
+
+      addToast({
+        title: 'Incident Resolved & Remembered',
+        message: 'Experience successfully committed to OpsMemory Hindsight bank.',
+        type: 'success'
       });
 
-      setSuccessData(result);
       if (onResolved) {
         onResolved(result);
       }
     } catch (err) {
-      setError(err.message || 'Failed to submit incident resolution.');
+      setError(err.message || 'Failed to submit resolution to OpsMemory backend.');
+      addToast({
+        title: 'Resolution Error',
+        message: err.message || 'Could not reach backend.',
+        type: 'error'
+      });
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
-  if (successData) {
+  // SUCCESS STATE (Hero aesthetic: dark surface, subtle emerald beacon, no giant green cards)
+  if (confirmedData) {
+    const exp = confirmedData.stored_experience || {
+      incident: title,
+      service: service,
+      root_cause: rootCause,
+      resolution: resolution,
+      outcome: outcome,
+      time_to_resolution: timeToResolution
+    };
+
     return (
-      <div className="p-6 rounded-2xl bg-[#17191C] border border-[#84E071]/40 space-y-4 animate-fadeIn">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2 text-[#84E071] font-mono font-bold text-base">
-              <Check className="w-5 h-5 text-[#84E071] stroke-[2.5]" />
-              <span>✓ EXPERIENCE SAVED</span>
+      <div className="p-6 sm:p-7 rounded-2xl bg-[#0d0d11] border border-white/[0.15] shadow-2xl space-y-6 font-sans animate-fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/[0.08]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/15 flex items-center justify-center shrink-0">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             </div>
-            <p className="text-xs text-[#EDEDED] pl-7">
-              OpsMemory will use this incident when similar failures occur.
-            </p>
-            <p className="text-[11px] text-[#8E95A0] pl-7">
-              Root cause and mitigation indexed into Hindsight bank: <span className="font-mono text-[#84E071]">ops-incidents</span>
-            </p>
+            <div>
+              <h3 className="font-mono text-sm font-bold text-white tracking-tight">
+                {confirmedData.memory_retained === false
+                  ? 'INCIDENT RESOLVED (MEMORY RETENTION PENDING)'
+                  : confirmedData.database_updated === false
+                  ? 'EXPERIENCE STORED (DATABASE STATUS PENDING)'
+                  : 'EXPERIENCE STORED IN OPSMEMORY'}
+              </h3>
+              <p className="text-xs text-[#949aa3] mt-0.5 font-sans">
+                {confirmedData.memory_retained === false
+                  ? 'Incident was updated in database, but Hindsight memory retention was not completed.'
+                  : confirmedData.database_updated === false
+                  ? 'Incident resolution was committed to Hindsight, but database record update encountered an issue.'
+                  : 'Incident experience successfully committed to Hindsight memory bank.'}
+              </p>
+            </div>
           </div>
 
-          <div className="pl-7 sm:pl-0">
-            <Button
-              variant="obsidian"
-              size="md"
-              icon={Brain}
-              onClick={() => navigate('/memory')}
-              className="text-xs font-mono"
-            >
-              View Memory →
-            </Button>
+          <span className="text-[10px] font-mono px-3 py-1 rounded border border-white/15 bg-white/[0.03] text-white/90 self-start sm:self-auto">
+            Hindsight Bank: OpsMemory
+          </span>
+        </div>
+
+        {/* Visual Knowledge Feedback */}
+        <div className="p-4 rounded-xl bg-[#121216] border border-white/[0.08] space-y-3">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[#5a606b] block font-semibold">
+            Knowledge Loop Status
+          </span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs font-mono">
+            <div className="p-2.5 rounded-lg bg-[#0d0d11] border border-white/[0.08] flex items-center gap-2 text-white">
+              <span className={confirmedData.database_updated !== false ? "text-emerald-400" : "text-amber-400"}>
+                {confirmedData.database_updated !== false ? "✓" : "!"}
+              </span>
+              <span>Incident Resolved</span>
+            </div>
+            <div className="p-2.5 rounded-lg bg-[#0d0d11] border border-white/[0.08] flex items-center gap-2 text-white">
+              <span className={confirmedData.memory_retained !== false ? "text-emerald-400" : "text-amber-400"}>
+                {confirmedData.memory_retained !== false ? "✓" : "!"}
+              </span>
+              <span>{confirmedData.memory_retained !== false ? "Experience Remembered" : "Retention Failed"}</span>
+            </div>
+            <div className="p-2.5 rounded-lg bg-[#0d0d11] border border-white/[0.08] flex items-center gap-2 text-white">
+              <Sparkles className="w-3.5 h-3.5 text-white/80" />
+              <span>Future Incidents Reuse</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Retained Metadata Summary */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+          <div className="p-3 rounded-lg bg-[#121216] border border-white/[0.08]">
+            <span className="text-[10px] text-[#5a606b] block mb-0.5">ACTUAL ROOT CAUSE</span>
+            <span className="text-white">{exp.root_cause}</span>
+          </div>
+          <div className="p-3 rounded-lg bg-[#121216] border border-white/[0.08]">
+            <span className="text-[10px] text-[#5a606b] block mb-0.5">VERIFIED RESOLUTION</span>
+            <span className="text-white/90">{exp.resolution}</span>
           </div>
         </div>
       </div>
     );
   }
 
+  // ACTIVE RESOLUTION FORM
   return (
-    <div className="p-6 rounded-2xl bg-[#17191C] border border-[#272A2F] space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#272A2F]">
+    <div className="p-5 sm:p-6 rounded-2xl bg-[#0d0d11] border border-white/[0.08] shadow-xl space-y-5 font-sans">
+      <div className="pb-3 border-b border-white/[0.08] flex items-center justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-[#EDEDED] font-sans">
-            Confirm Incident Resolution
+          <h3 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-white/80" />
+            <span>Resolve &amp; Retain Incident Experience</span>
           </h3>
-          <p className="text-xs text-[#8E95A0] mt-0.5">
-            Retain verified fix in Hindsight to prevent future repeat triage
+          <p className="text-xs text-[#949aa3] mt-0.5 font-sans">
+            Validate the resolution applied. OpsMemory will store this experience to prevent repeat outages.
           </p>
         </div>
-
-        <span className="text-[11px] font-mono text-[#8E95A0]">
-          Status: <strong className="text-[#84E071]">Ready for Retention</strong>
+        <span className="text-[11px] font-mono text-[#5a606b] hidden sm:inline">
+          FastAPI /api/incidents/resolve
         </span>
       </div>
 
       {error && (
-        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 flex items-center gap-2">
+        <div className="p-3 rounded-xl bg-rose-500/5 border border-rose-500/25 text-xs text-rose-400 flex items-center gap-2 font-mono">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* "Did this fix work?" Buttons */}
-        <div>
-          <label className="block text-xs font-mono font-medium text-[#8E95A0] mb-2 uppercase tracking-wider">
-            Did this fix work?
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Root Cause Field */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-white">
+            Actual Root Cause
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            {[
-              { id: 'Fix Worked', label: '✓ Fix Worked' },
-              { id: 'Fix Partially Worked', label: 'Fix Partially Worked' },
-              { id: 'Fix Failed', label: '✕ Fix Failed' },
-            ].map((opt) => (
-              <button
-                type="button"
-                key={opt.id}
-                onClick={() => {
-                  setSelectedOutcome(opt.id);
-                  setShowFields(true);
-                }}
-                className={`py-2.5 px-4 rounded-xl text-xs font-mono font-semibold transition-all border ${
-                  selectedOutcome === opt.id
-                    ? opt.id === 'Fix Worked'
-                      ? 'bg-[#84E071] text-[#090A0C] border-[#84E071] shadow-xs'
-                      : opt.id === 'Fix Partially Worked'
-                      ? 'bg-amber-400 text-[#090A0C] border-amber-400'
-                      : 'bg-rose-500 text-white border-rose-500'
-                    : 'bg-[#111214] text-[#8E95A0] border-[#272A2F] hover:text-[#EDEDED] hover:border-[#383C44]'
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
+          <input
+            type="text"
+            value={rootCause}
+            onChange={(e) => setRootCause(e.target.value)}
+            placeholder="What actually caused the outage?"
+            className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-[#121216] text-[#EDEDED] border border-white/[0.08] focus:border-white/40 focus:ring-1 focus:ring-white/20 focus:outline-none font-mono"
+          />
+        </div>
+
+        {/* Resolution Field */}
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-white">
+            Resolution Applied &amp; Verification
+          </label>
+          <textarea
+            rows={3}
+            value={resolution}
+            onChange={(e) => setResolution(e.target.value)}
+            placeholder="Explain steps taken to restore service (e.g. pool configuration, rollback, instance restart)..."
+            className="w-full px-3.5 py-2.5 rounded-xl text-xs sm:text-sm bg-[#121216] text-[#EDEDED] border border-white/[0.08] focus:border-white/40 focus:ring-1 focus:ring-white/20 focus:outline-none font-mono resize-y"
+          />
+        </div>
+
+        {/* Outcome & MTTR Row */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-white">
+              Resolution Outcome
+            </label>
+            <select
+              value={outcome}
+              onChange={(e) => setOutcome(e.target.value)}
+              className="w-full px-3 py-2 rounded-xl text-xs bg-[#121216] text-[#EDEDED] border border-white/[0.08] focus:border-white/40 focus:outline-none"
+            >
+              <option value="Fix Worked">Fix Worked (Zero Repeat Outages)</option>
+              <option value="Partially Mitigated">Partially Mitigated</option>
+              <option value="Temporary Workaround">Temporary Workaround</option>
+              <option value="Requires Architectural Revision">Requires Architectural Revision</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-medium text-white">
+              Time to Resolution (MTTR)
+            </label>
+            <input
+              type="text"
+              value={timeToResolution}
+              onChange={(e) => setTimeToResolution(e.target.value)}
+              placeholder="e.g. 14 minutes"
+              className="w-full px-3 py-2 rounded-xl text-xs bg-[#121216] text-[#EDEDED] border border-white/[0.08] focus:border-white/40 focus:outline-none font-mono"
+            />
           </div>
         </div>
 
-        {/* Textareas */}
-        {showFields && (
-          <div className="space-y-4 pt-2">
-            <div>
-              <label className="block text-xs font-mono font-medium text-[#8E95A0] mb-1.5 uppercase tracking-wider">
-                Actual Root Cause
-              </label>
-              <textarea
-                rows={2}
-                value={rootCause}
-                onChange={(e) => setRootCause(e.target.value)}
-                placeholder="e.g. HikariCP database connection pool starvation under high concurrent payment webhook traffic..."
-                className="w-full bg-[#111214] border border-[#272A2F] rounded-xl p-3 text-xs text-[#EDEDED] placeholder-[#5A606B] focus:outline-none focus:border-[#84E071]/50 font-mono transition-colors"
-                required
-              />
-            </div>
+        {/* Submit Button (Matching Hero Accent) */}
+        <div className="pt-2 flex items-center justify-between border-t border-white/[0.08]">
+          <span className="text-[11px] font-mono text-[#5a606b]">
+            Shortcut: <kbd>R</kbd>
+          </span>
 
-            <div>
-              <label className="block text-xs font-mono font-medium text-[#8E95A0] mb-1.5 uppercase tracking-wider">
-                Resolution Applied
-              </label>
-              <textarea
-                rows={2}
-                value={resolution}
-                onChange={(e) => setResolution(e.target.value)}
-                placeholder="e.g. Scaled database max connections to 150 and rolled restart Payment API pod deployment..."
-                className="w-full bg-[#111214] border border-[#272A2F] rounded-xl p-3 text-xs text-[#EDEDED] placeholder-[#5A606B] focus:outline-none focus:border-[#84E071]/50 font-mono transition-colors"
-                required
-              />
-            </div>
-
-            {/* Save Experience Button */}
-            <div className="pt-3 border-t border-[#272A2F] flex items-center justify-end gap-3">
-              <Button
-                type="submit"
-                variant="obsidian"
-                size="lg"
-                loading={loading}
-                icon={Brain}
-                className="text-xs font-mono"
-              >
-                🧠 Save Experience to Memory
-              </Button>
-            </div>
-          </div>
-        )}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="px-6 py-2.5 rounded-lg text-xs font-mono font-bold bg-white text-black hover:bg-neutral-200 border border-white/30 shadow-lg shadow-white/5 transition-all duration-200 cursor-pointer active:scale-95 flex items-center gap-2 disabled:opacity-50"
+          >
+            {submitting ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Storing in Hindsight...</span>
+              </>
+            ) : (
+              <>
+                <span>✓</span>
+                <span>Resolve &amp; Remember</span>
+              </>
+            )}
+          </button>
+        </div>
       </form>
     </div>
   );

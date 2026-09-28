@@ -13,6 +13,7 @@ import StatCard from '../components/dashboard/StatCard';
 import IncidentTable from '../components/dashboard/IncidentTable';
 import PatternCard from '../components/dashboard/PatternCard';
 import MemoryGrowthChart from '../components/memory/MemoryGrowthChart';
+import MemoryConnectionFlow from '../components/incidents/MemoryConnectionFlow';
 import LoadingState from '../components/ui/LoadingState';
 import ErrorState from '../components/ui/ErrorState';
 import { getIncidents, getMemoryStats, getMemoryPatterns } from '../services/api';
@@ -79,11 +80,14 @@ export default function Dashboard() {
           size="pill"
           icon={Plus}
           onClick={() => navigate('/incidents/new')}
-          className="text-xs shadow-md shadow-[#84E071]/10 shrink-0"
+          className="text-xs shrink-0"
         >
           New Incident
         </Button>
       </div>
+
+      {/* Visual DevOps Response Workflow */}
+      <MemoryConnectionFlow variant="horizontal" currentStep="new" />
 
       {/* Horizontal Compact Metric Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -132,17 +136,17 @@ export default function Dashboard() {
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-[#EDEDED] font-mono">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-white font-mono">
               Active &amp; Recent Incidents
             </h2>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#17191C] border border-[#272A2F] text-[#8E95A0]">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.04] border border-white/10 text-zinc-400">
               {incidents.length} Logged
             </span>
           </div>
 
           <button
             onClick={() => navigate('/incidents')}
-            className="text-xs text-[#8E95A0] hover:text-[#84E071] flex items-center gap-1 transition-colors"
+            className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors"
           >
             <span>View All</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -153,22 +157,22 @@ export default function Dashboard() {
       </div>
 
       {/* DASHBOARD MEMORY PANEL: Prominent 🧠 OPSMEMORY Container */}
-      <div className="p-5 sm:p-6 rounded-2xl bg-[#17191C] border border-[#272A2F] space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#272A2F]">
+      <div className="p-5 sm:p-6 rounded-2xl bg-[#0d0d11] border border-white/[0.08] space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#84E071]/12 border border-[#84E071]/30 flex items-center justify-center text-[#84E071]">
-              <Brain className="w-5 h-5 text-[#84E071]" />
+            <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/15 flex items-center justify-center text-white">
+              <Brain className="w-5 h-5 text-white" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold tracking-tight text-[#EDEDED] font-sans">
+                <h2 className="text-sm font-bold tracking-tight text-white font-sans">
                   🧠 OPSMEMORY
                 </h2>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#84E071]/10 text-[#84E071] border border-[#84E071]/25">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white/[0.06] text-white border border-white/15">
                   Hindsight Engine
                 </span>
               </div>
-              <p className="text-xs text-[#8E95A0] mt-0.5">
+              <p className="text-xs text-zinc-400 mt-0.5">
                 Your incident response memory
               </p>
             </div>
@@ -176,7 +180,7 @@ export default function Dashboard() {
 
           <button
             onClick={() => navigate('/memory')}
-            className="text-xs text-[#8E95A0] hover:text-[#84E071] flex items-center gap-1 transition-colors font-sans"
+            className="text-xs text-zinc-400 hover:text-white flex items-center gap-1 transition-colors font-sans"
           >
             <span>Explore Memory Bank</span>
             <ArrowRight className="w-3.5 h-3.5" />

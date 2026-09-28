@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import {
   Menu,
@@ -6,10 +6,48 @@ import {
   Settings,
   ChevronRight
 } from 'lucide-react';
+import { checkHealth } from '../../services/api';
 
 export default function Topbar({ onToggleSidebar }) {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const [healthStatus, setHealthStatus] = useState({
+    status: 'checking',
+    bank: 'OpsMemory',
+    isOnline: true,
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    const verifyHealth = async () => {
+      try {
+        const res = await checkHealth();
+        if (isMounted) {
+          setHealthStatus({
+            status: res.status || 'ok',
+            bank: res.memory_bank || 'OpsMemory',
+            isOnline: res.backend === 'healthy' || res.status === 'ok',
+          });
+        }
+      } catch (_e) {
+        if (isMounted) {
+          setHealthStatus({
+            status: 'error',
+            bank: 'OpsMemory',
+            isOnline: false,
+          });
+        }
+      }
+    };
+
+    verifyHealth();
+    const interval = setInterval(verifyHealth, 15000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   const pathnames = location.pathname.split('/').filter((x) => x);
 
@@ -23,12 +61,12 @@ export default function Topbar({ onToggleSidebar }) {
   };
 
   return (
-    <header className="h-14 border-b border-[#272A2F]/80 bg-[#111214]/90 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6">
+    <header className="h-14 border-b border-white/[0.08] bg-[#050505]/90 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6">
       {/* Left: Mobile Toggle & Page Title / Breadcrumb */}
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
-          className="md:hidden p-1.5 rounded-lg text-[#8E95A0] hover:text-[#EDEDED] hover:bg-[#17191C]"
+          className="md:hidden p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.04]"
           aria-label="Toggle navigation menu"
         >
           <Menu className="w-5 h-5" />
@@ -37,13 +75,13 @@ export default function Topbar({ onToggleSidebar }) {
         <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs font-sans">
           <Link
             to="/"
-            className="text-[#8E95A0] hover:text-[#EDEDED] transition-colors"
+            className="text-zinc-400 hover:text-white transition-colors"
           >
             OpsMemory
           </Link>
-          <ChevronRight className="w-3.5 h-3.5 text-[#5A606B] shrink-0" />
+          <ChevronRight className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
           {pathnames.length === 0 ? (
-            <span className="text-[#EDEDED] font-medium">Incident Intelligence</span>
+            <span className="text-white font-medium">Incident Intelligence</span>
           ) : (
             pathnames.map((part, index) => {
               const routeTo = `/${pathnames.slice(0, index + 1).join('/')}`;
@@ -53,18 +91,18 @@ export default function Topbar({ onToggleSidebar }) {
               return (
                 <React.Fragment key={routeTo}>
                   {isLast ? (
-                    <span className="text-[#EDEDED] font-medium truncate max-w-[180px] sm:max-w-none">
+                    <span className="text-white font-medium truncate max-w-[180px] sm:max-w-none">
                       {title}
                     </span>
                   ) : (
                     <>
                       <Link
                         to={routeTo}
-                        className="text-[#8E95A0] hover:text-[#EDEDED] transition-colors"
+                        className="text-zinc-400 hover:text-white transition-colors"
                       >
                         {title}
                       </Link>
-                      <ChevronRight className="w-3.5 h-3.5 text-[#5A606B] shrink-0" />
+                      <ChevronRight className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
                     </>
                   )}
                 </React.Fragment>
@@ -76,26 +114,36 @@ export default function Topbar({ onToggleSidebar }) {
 
       {/* Right: Hindsight status, Notification icon, Settings icon, User avatar */}
       <div className="flex items-center gap-3">
-        {/* Hindsight Status Pill */}
-        <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#17191C] border border-[#272A2F] text-[11px] font-mono">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#84E071] animate-pulse-subtle"></span>
-          <span className="text-[#EDEDED]">Hindsight Connected</span>
+        {/* Live Backend / Hindsight Status Pill */}
+        <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/10 text-[11px] font-mono">
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              healthStatus.isOnline
+                ? 'bg-emerald-400 animate-pulse'
+                : 'bg-rose-500'
+            }`}
+          />
+          <span className="text-zinc-200">
+            {healthStatus.isOnline
+              ? `FastAPI: ${healthStatus.bank}`
+              : 'Backend Offline'}
+          </span>
         </div>
 
         {/* Notifications Icon */}
         <button
-          className="relative p-2 rounded-xl text-[#8E95A0] hover:text-[#EDEDED] hover:bg-[#17191C] transition-colors"
+          className="relative p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.04] transition-colors"
           title="Incident Alerts"
           aria-label="View notifications"
         >
           <Bell className="w-4 h-4" />
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#84E071]"></span>
+          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-white"></span>
         </button>
 
         {/* Settings Icon */}
         <button
           onClick={() => navigate('/settings')}
-          className="p-2 rounded-xl text-[#8E95A0] hover:text-[#EDEDED] hover:bg-[#17191C] transition-colors"
+          className="p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/[0.04] transition-colors"
           title="Settings"
           aria-label="Open settings"
         >
@@ -103,7 +151,7 @@ export default function Topbar({ onToggleSidebar }) {
         </button>
 
         {/* User avatar */}
-        <div className="w-7 h-7 rounded-full bg-[#17191C] border border-[#272A2F] flex items-center justify-center text-xs font-mono font-semibold text-[#84E071]">
+        <div className="w-7 h-7 rounded-full bg-white/[0.06] border border-white/10 flex items-center justify-center text-xs font-mono font-semibold text-white">
           S
         </div>
       </div>
