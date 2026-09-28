@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --bg-base: #0B0C0E;
+    --bg-sidebar: #090A0C;
+    --bg-workspace: #111214;
+    --bg-card: #17191C;
+    --bg-panel: #1B1D21;
+    --border-subtle: #272A2F;
+    --accent-green: #84E071;
+    --accent-green-hover: #73D460;
+  }
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #0B0C0E;
+    color: #EDEDED;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  code, pre, kbd, samp {
+    font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+}
+
+/* Custom scrollbars for technical log viewers and sidebars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #272A2F;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3B3F47;
+}
+
+/* Pulse animation for memory and status */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.96); }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Selection */
+::selection {
+  background: rgba(132, 224, 113, 0.25);
+  color: #84E071;
+}
