@@ -8,10 +8,11 @@ import {
   Info
 } from 'lucide-react';
 import Badge from '../components/ui/Badge';
+import { API_URL } from '../services/api';
 
 export default function Settings() {
-  const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-  const isMock = import.meta.env.VITE_USE_MOCK_DATA !== 'false';
+  const displayApiUrl = API_URL || 'Configured via VITE_API_URL in production';
+  const isMock = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto pb-12">
@@ -45,7 +46,7 @@ export default function Settings() {
               </div>
               <div>
                 <span className="text-white font-medium font-sans">OpsMemory Backend</span>
-                <p className="text-[11px] text-zinc-500">{apiBaseUrl}</p>
+                <p className="text-[11px] text-zinc-500">{displayApiUrl}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">

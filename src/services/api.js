@@ -1,6 +1,7 @@
 /**
  * Centralized API Service for OpsMemory
- * Connects React frontend directly to the FastAPI backend at http://127.0.0.1:8000.
+ * Connects React frontend to the FastAPI backend.
+ * Configured via VITE_API_URL environment variable.
  *
  * Backend Endpoints:
  * - GET /health
@@ -17,7 +18,14 @@ import {
 } from '../data/mockData';
 import { parseAiAnalysis } from './aiParser';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+// Primary configuration: VITE_API_URL (Render / Production / Staging)
+// Support backward compatibility for VITE_API_BASE_URL.
+const rawApiUrl = (import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || '').trim();
+// Strip any trailing slash so endpoints format cleanly as `${API_URL}/path`
+const cleanApiUrl = rawApiUrl.replace(/\/+$/, '');
+
+// Development fallback: Fall back to local FastAPI server only in local development mode
+export const API_URL = cleanApiUrl || (import.meta.env.DEV ? 'http://127.0.0.1:8000' : '');
 const FORCE_MOCK = import.meta.env.VITE_USE_MOCK_DATA === 'true';
 
 // Persistent in-memory + session cache for live investigations
@@ -53,7 +61,16 @@ export class ApiError extends Error {
  * Standard fetch request wrapper for FastAPI backend
  */
 async function request(endpoint, options = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
+  // Ensure an API URL is available
+  if (!API_URL && !import.meta.env.DEV) {
+    throw new ApiError(
+      'OpsMemory backend API URL is not configured. Please set the VITE_API_URL environment variable in your deployment settings.',
+      0,
+      false
+    );
+  }
+
+  const url = `${API_URL}${endpoint}`;
   try {
     const response = await fetch(url, {
       headers: {
@@ -75,9 +92,20 @@ async function request(endpoint, options = {}) {
     if (error instanceof ApiError) {
       throw error;
     }
-    // Network failure / connection refused to backend
+
+    // Technical details for development logs only
+    if (import.meta.env.DEV) {
+      console.error('[OpsMemory API Error]', error);
+      throw new ApiError(
+        `Unable to reach OpsMemory backend at ${API_URL || 'http://127.0.0.1:8000'}. Ensure FastAPI is running on port 8000 (uvicorn main:app --reload).`,
+        0,
+        false
+      );
+    }
+
+    // Clean, user-facing error message for production
     throw new ApiError(
-      `Unable to reach OpsMemory backend at ${API_BASE_URL}. Ensure FastAPI is running on port 8000 (uvicorn main:app --reload).`,
+      'Unable to connect to the OpsMemory backend. Please try again.',
       0,
       false
     );
